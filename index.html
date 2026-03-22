@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Horarios de Clase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0369a1;
+            --primary-hover: #075985;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #000000;
+            --text-muted: #475569;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --radius: 4px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .course-info {
+            text-align: center;
+            width: 100%;
+        }
+
+        .course-info h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0369a1;
+            outline: none;
+            transition: var(--transition);
+            margin-bottom: 0.2rem;
+        }
+
+        .course-info h1:focus {
+            background: #f0f9ff;
+        }
+
+        .course-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        button,
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+            background: #fff;
+            color: var(--text-main);
+        }
+
+        button:hover,
+        .btn:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn-print {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-print:hover {
+            background-color: var(--primary-hover);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            color: #ef4444;
+            border: 1px solid #fee2e2;
+        }
+
+        .btn-reset:hover {
+            background-color: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        /* Main Layout */
+        main {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Sidebar */
+        aside {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .add-subject-form h2 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        input[type="text"] {
+            padding: 0.6rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .color-option.selected {
+            border-color: var(--text-main);
+            transform: scale(1.1);
+        }
+
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+            background-color: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .btn-add:hover {
+            background-color: #cbd5e1;
+        }
+
+        .subjects-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .subject-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid var(--border-color);
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        /* Sticky Subject Palette */
+        .subject-palette {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #fff;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .palette-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .palette-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            /* Pill shape */
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            cursor: grab;
+            transition: all 0.2s ease;
+            font-weight: 700;
+            font-size: 0.85rem;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .palette-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .palette-item .color-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hide the old sidebar list if needed, or keeping it as backup? 
+           Let's hide it to avoid confusion. */
+        .subjects-list {
+            display: none;
+        }
+
+        .subject-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow);
+        }
+
+        .subject-item:active {
+            cursor: grabbing;
+        }
+
+        .btn-delete-sub {
+            padding: 4px;
+            background: transparent;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: var(--transition);
+            border-radius: 4px;
+        }
+
+        .subject-item:hover .btn-delete-sub {
+            opacity: 1;
+        }
+
+        .btn-delete-sub:hover {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .subject-tag {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* Schedule Table */
+        .schedule-container {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th {
+            background-color: #ffffff;
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: 800;
+            color: #000000;
+            border: 1.5px solid #000000;
+            text-transform: uppercase;
+        }
+
+        td {
+            height: 70px;
+            border: 1.5px solid #000000;
+            padding: 0;
+            position: relative;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        .time-col {
+            width: 90px;
+            font-weight: 700;
+            color: #000000;
+            background-color: #ffffff;
+            text-align: center;
+            border: 1.5px solid #000000;
+            transition: var(--transition);
+        }
+
+        .drop-zone-row {
+            cursor: copy;
+        }
+
+        .drag-over-row {
+            background-color: rgba(3, 105, 161, 0.1) !important;
+            border: 1.5px dotted var(--primary-color) !important;
+        }
+
+        .drop-zone {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(79, 70, 229, 0.1);
+            border: 2px dashed var(--primary-color);
+        }
+
+        .scheduled-class {
+            width: 100%;
+            height: 100%;
+            padding: 2px;
+            color: #1e293b;
+            cursor: grab;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .scheduled-class .subject-name {
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .scheduled-class .teacher-name {
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .special-cell {
+            background-color: #ffffff;
+            color: #000000 !important;
+            font-weight: 900;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Trash Zone */
+        .trash-zone {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4);
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0);
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .trash-zone.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .trash-zone.drag-over {
+            transform: scale(1.2);
+            background: #dc2626;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                padding: 0;
+                background-color: white;
+            }
+
+            header,
+            aside,
+            .header-subtitle,
+            .actions,
+            .btn-add,
+            .btn-print,
+            .btn-reset,
+            .conflict-badge,
+            .subject-palette,
+            .trash-zone {
+                display: none !important;
+            }
+
+            main {
+                display: block;
+            }
+
+            .schedule-container {
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                border: none;
+                border-radius: 0;
+                background: white;
+            }
+
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+
+            .print-header h1 {
+                font-size: 24pt;
+                color: black;
+                margin-bottom: 0.5rem;
+            }
+
+            table {
+                border-collapse: collapse !important;
+                border: 2pt solid black !important;
+                width: 100% !important;
+            }
+
+            th,
+            td {
+                border: 1pt solid black !important;
+                height: 1.2cm !important;
+                vertical-align: middle;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: hidden;
+            }
+
+            .drop-zone {
+                height: 100% !important;
+                width: 100% !important;
+                display: flex !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+
+            .scheduled-class {
+                color: #1e293b !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 0 !important;
+                border-radius: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                margin: 0 !important;
+            }
+
+            .scheduled-class .subject-name {
+                font-weight: 800;
+                font-size: 10pt;
+                text-transform: uppercase;
+                line-height: 1;
+            }
+
+            .scheduled-class .teacher-name {
+                font-size: 8pt;
+                font-weight: 400;
+                margin-top: 1pt;
+            }
+
+            .special-cell {
+                background-color: white !important;
+                color: black !important;
+            }
+
+            .special-cell .subject-name {
+                font-size: 12pt;
+                letter-spacing: 2pt;
+            }
+
+            @page {
+                size: A4 landscape;
+                margin: 0.5cm;
+            }
+        }
+
+        .print-header {
+            display: none;
+        }
+
+        /* Tooltip for help */
+        .help-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        /* Clean Header Styles */
+        header {
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 2rem;
+            background: #fff;
+        }
+
+        .top-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 1rem;
+        }
+
+        .course-manager {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .course-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #courseSelector {
+            padding: 0.6rem 2.5rem 0.6rem 1rem;
+            border-radius: 8px;
+            border: 1.5px solid #e2e8f0;
+            font-weight: 600;
+            background: #fff;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230369a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1.2rem;
+        }
+
+        .header-title-area {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .header-title-area h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: -2px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .header-subtitle {
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            margin-top: 0.5rem;
+        }
+
+        .btn-toolbar {
+            width: auto;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            background: #fff;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .btn-toolbar-primary {
+            background: #f0f9ff;
+            color: var(--primary-color);
+            border-color: #bae6fd;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="print-header" id="printHeader">
+        <h1 id="printTitle">Horario de Clases</h1>
+        <p id="printSubtitle"></p>
+    </div>
+
+    <header>
+        <!-- Barra de Herramientas Superior -->
+        <div class="top-toolbar">
+            <div class="course-manager">
+                <!-- View Mode Switcher -->
+                <div
+                    style="background: #f8fafc; padding: 4px; border-radius: 10px; border: 1.5px solid #e2e8f0; display: flex; gap: 4px; margin-right: 1rem;">
+                    <button onclick="switchViewMode('course')" id="btnViewCourse"
+                        style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; border-radius: 6px; background: var(--primary-color); color: white;">
+                        Vista por Curso
+                    </button>
+                    <button onclick="switchViewMode('teacher')" id="btnViewTeacher"
+                        style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border: none; border-radius: 6px; background: transparent; color: var(--text-muted);">
+                        Vista por Profesor
+                    </button>
+                </div>
+
+                <span class="course-label" id="selectorLabel">Curso:</span>
+                <select id="courseSelector" onchange="switchCourse(this.value)">
+                    <!-- Opciones generadas por JS -->
+                </select>
+                <div id="courseManagementBtns" style="display: flex; gap: 0.5rem;">
+                    <button onclick="addCourse()" class="btn-add btn-toolbar btn-toolbar-primary">
+                        + Nuevo
+                    </button>
+                    <button onclick="deleteCourse()" class="btn-reset btn-toolbar">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+
+            <div class="actions" style="margin: 0;">
+                <a href="comousarlo.html" class="btn"
+                    style="color: var(--primary-color); border-color: #bae6fd; background: #f0f9ff;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Ayuda
+                </a>
+                <button class="btn-reset" onclick="resetAll()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                    Limpiar
+                </button>
+                <button class="btn-print" onclick="window.print()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Imprimir PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Área del Título del Curso/Profesor -->
+        <div class="header-title-area">
+            <h1 contenteditable="true" id="courseName">1° Año</h1>
+            <p class="header-subtitle" id="subtitleLabel">Haz clic arriba para editar el nombre</p>
+        </div>
+    </header>
+
+    <!-- Nueva Barra de Acceso Rápido (Paleta) -->
+    <div id="subjectPalette" class="subject-palette">
+        <span class="palette-label">Arrastra para asignar:</span>
+        <div id="paletteItems" style="display: flex; gap: 0.75rem;">
+            <!-- Píldoras de asignaturas aparecerán aquí -->
+        </div>
+    </div>
+
+    <main>
+        <aside>
+            <div id="conflictAlert"
+                style="display:none; background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; margin-bottom: 1rem; font-weight: 600;">
+                ⚠️ Conflictos detectados en otros cursos.
+            </div>
+
+            <div class="add-subject-form">
+                <h2>Mis Asignaturas</h2>
+                <div class="form-group">
+                    <label for="newSubjectName">Nombre de Asignatura</label>
+                    <input type="text" id="newSubjectName" placeholder="Ej: Matemáticas">
+                </div>
+                <div class="form-group">
+                    <label for="newTeacherName">Profesor(a)</label>
+                    <input type="text" id="newTeacherName" placeholder="Ej: Juan Perez">
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    <div class="color-picker-wrapper" id="colorPicker">
+                        <!-- Colors will be generated here -->
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addSubject()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Añadir Asignatura
+                </button>
+            </div>
+
+            <div class="add-subject-form">
+                <h2>Opciones del Horario</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn-add" onclick="addHourSlot()" style="flex: 1;">
+                        + Fila
+                    </button>
+                    <button class="btn-add" onclick="removeHourSlot()" style="flex: 1; color: #ef4444;">
+                        - Fila
+                    </button>
+                </div>
+                <p class="help-text">Puedes editar las horas haciendo clic sobre ellas en la tabla.</p>
+            </div>
+
+            <div class="subjects-list" id="subjectsList">
+                <!-- Subject items will be generated here -->
+            </div>
+
+            <p class="help-text">💡 Arrastra a una celda para una clase, o a <b>HORAS</b> para llenar toda la fila
+                (ideal para Recreo).</p>
+            <p class="help-text">Arrastra de vuelta a la papelera o clic derecho para borrar.</p>
+        </aside>
+
+        <div class="schedule-container">
+            <table id="scheduleTable">
+                <thead>
+                    <tr>
+                    <tr>
+                        <th class="time-col">HORAS</th>
+                        <th>LUNES</th>
+                        <th>MARTES</th>
+                        <th>MIÉRCOLES</th>
+                        <th>JUEVES</th>
+                        <th>VIERNES</th>
+                    </tr>
+                    </tr>
+                </thead>
+                <tbody id="scheduleBody">
+                    <!-- Rows will be generated here -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="trashZone" class="trash-zone">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+    </div>
+
+    <script>
+        // Configuration
+        const HOURS_DEFAULT = [
+            "8:00-8:45", "8:45-9:30", "9:30-9:45", "9:45-10:30", "10:30-11:15",
+            "11:15-11:30", "11:30-12:15", "12:15-13:00", "13:00-13:45", "13:45-14:30", "14:35-15:20"
+        ];
+
+        const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+
+        const PRESET_COLORS = [
+            "#fee2e2", "#fce7f3", "#fae8ff", "#ede9fe",
+            "#e0e7ff", "#dbeafe", "#cffafe", "#ccfbf1",
+            "#dcfce7", "#fef9c3", "#ffedd5"
+        ];
+
+        // --- GLOBAL DATA PERSISTENCE ---
+        let allSchedules = JSON.parse(localStorage.getItem('allSchedules'));
+        let viewMode = 'course'; // 'course' or 'teacher'
+        let currentTeacher = '';
+
+        // Point 4: If first time (empty) or just "1° Básico A", force the Pre-Kínder to 8° Año list
+        const defaultCourses = {
+            "Pre-Kínder": {}, "Kínder": {},
+            "1° Año": {}, "2° Año": {}, "3° Año": {}, "4° Año": {},
+            "5° Año": {}, "6° Año": {}, "7° Año": {}, "8° Año": {}
+        };
+
+        if (!allSchedules || Object.keys(allSchedules).length === 0 || (Object.keys(allSchedules).length === 1 && allSchedules["1° Básico A"])) {
+            allSchedules = defaultCourses;
+            localStorage.setItem('allSchedules', JSON.stringify(allSchedules));
+        }
+
+        // Proactive: Merge Pre-K and K if they are missing but user has other courses
+        if (!allSchedules["Pre-Kínder"]) {
+            allSchedules = { "Pre-Kínder": {}, "Kínder": {}, ...allSchedules };
+            localStorage.setItem('allSchedules', JSON.stringify(allSchedules));
+        }
+
+        let currentCourseId = localStorage.getItem('currentCourseId') || Object.keys(allSchedules)[0];
+        if (!allSchedules[currentCourseId]) currentCourseId = Object.keys(allSchedules)[0];
+
+        // Shared Configuration
+        let hours = JSON.parse(localStorage.getItem('hours')) || [...HOURS_DEFAULT];
+        let subjects = JSON.parse(localStorage.getItem('subjects')) || [
+            { id: 1, name: "RECREO", teacher: "", color: "#ffffff" },
+            { id: 2, name: "ALMUERZO", teacher: "", color: "#ffffff" }
+        ];
+
+        // State locals for current view
+        let schedule = allSchedules[currentCourseId] || {};
+        let selectedColor = PRESET_COLORS[0];
+        let draggingSubject = null;
+        let draggingFromCell = null;
+
+        // DOM Elements
+        const subjectsList = document.getElementById('subjectsList');
+        const scheduleBody = document.getElementById('scheduleBody');
+        const colorPicker = document.getElementById('colorPicker');
+        const courseNameInput = document.getElementById('courseName');
+        const trashZone = document.getElementById('trashZone');
+        const courseSelector = document.getElementById('courseSelector');
+        const conflictAlert = document.getElementById('conflictAlert');
+
+        // Initialization
+        function init() {
+            renderColorPicker();
+            renderSubjects();
+            updateCourseSelector(); // This now handles mode
+            renderTable();
+
+            courseNameInput.innerText = currentCourseId;
+
+            courseNameInput.addEventListener('blur', () => {
+                if (viewMode === 'teacher') return; // Cannot rename teacher here
+                const newName = courseNameInput.innerText.trim();
+                if (!newName) {
+                    courseNameInput.innerText = currentCourseId;
+                    return;
+                }
+                if (newName !== currentCourseId) {
+                    // Point 1: Handle Rename Conflict
+                    if (allSchedules[newName]) {
+                        alert(`El curso "${newName}" ya existe. Elige otro nombre.`);
+                        courseNameInput.innerText = currentCourseId;
+                    } else {
+                        renameCourse(currentCourseId, newName);
+                    }
+                }
+                document.getElementById('printSubtitle').innerText = courseNameInput.innerText;
+            });
+
+            document.getElementById('printSubtitle').innerText = currentCourseId;
+        }
+
+        // --- View Mode Management ---
+
+        function switchViewMode(mode) {
+            viewMode = mode;
+            const btnC = document.getElementById('btnViewCourse');
+            const btnT = document.getElementById('btnViewTeacher');
+            const label = document.getElementById('selectorLabel');
+            const mngBtns = document.getElementById('courseManagementBtns');
+            const subLabel = document.getElementById('subtitleLabel');
+
+            if (mode === 'course') {
+                btnC.style.background = 'var(--primary-color)'; btnC.style.color = 'white';
+                btnT.style.background = 'transparent'; btnT.style.color = 'var(--text-muted)';
+                label.innerText = "Curso:";
+                mngBtns.style.display = 'flex';
+                subLabel.innerText = "Haz clic arriba para editar el nombre";
+                courseNameInput.contentEditable = "true";
+                courseNameInput.innerText = currentCourseId;
+            } else {
+                btnT.style.background = 'var(--primary-color)'; btnT.style.color = 'white';
+                btnC.style.background = 'transparent'; btnC.style.color = 'var(--text-muted)';
+                label.innerText = "Profesor:";
+                mngBtns.style.display = 'none';
+                subLabel.innerText = "Horario consolidado en todos los cursos";
+                courseNameInput.contentEditable = "false";
+
+                // Set default teacher if empty
+                const teacherList = getUniqueTeachers();
+                if (teacherList.length > 0 && !currentTeacher) currentTeacher = teacherList[0];
+                courseNameInput.innerText = currentTeacher || "Sin Profesores";
+            }
+            updateCourseSelector();
+            renderTable();
+        }
+
+        function getUniqueTeachers() {
+            const set = new Set();
+            subjects.forEach(s => {
+                if (s.teacher && s.teacher.trim() !== "") set.add(s.teacher.trim());
+            });
+            return Array.from(set).sort();
+        }
+
+        function updateCourseSelector() {
+            courseSelector.innerHTML = '';
+            if (viewMode === 'course') {
+                Object.keys(allSchedules).forEach(courseId => {
+                    const opt = document.createElement('option');
+                    opt.value = courseId;
+                    opt.innerText = courseId;
+                    opt.selected = (courseId === currentCourseId);
+                    courseSelector.appendChild(opt);
+                });
+            } else {
+                const teachers = getUniqueTeachers();
+                teachers.forEach(tName => {
+                    const opt = document.createElement('option');
+                    opt.value = tName;
+                    opt.innerText = tName;
+                    opt.selected = (tName === currentTeacher);
+                    courseSelector.appendChild(opt);
+                });
+            }
+        }
+
+        function switchCourse(val) {
+            if (viewMode === 'course') {
+                currentCourseId = val;
+                localStorage.setItem('currentCourseId', currentCourseId);
+                schedule = allSchedules[currentCourseId];
+                courseNameInput.innerText = currentCourseId;
+            } else {
+                currentTeacher = val;
+                courseNameInput.innerText = currentTeacher;
+            }
+            renderTable();
+        }
+
+        // --- Multi-Course Management ---
+
+        // function updateCourseSelector() { ... moved above }
+
+        // function switchCourse(courseId) { ... moved above }
+
+        function addCourse() {
+            const name = prompt("Nombre del nuevo curso (ej: 2° Básico A):");
+            if (name && !allSchedules[name]) {
+                allSchedules[name] = {};
+                saveAllData();
+                updateCourseSelector();
+                switchCourse(name);
+            } else if (allSchedules[name]) {
+                alert("Ese curso ya existe.");
+            }
+        }
+
+        function renameCourse(oldId, newId) {
+            allSchedules[newId] = allSchedules[oldId];
+            delete allSchedules[oldId];
+            currentCourseId = newId;
+            localStorage.setItem('currentCourseId', currentCourseId);
+            saveAllData();
+            updateCourseSelector();
+        }
+
+        function deleteCourse() {
+            if (Object.keys(allSchedules).length <= 1) {
+                alert("No puedes borrar el único curso existente.");
+                return;
+            }
+            if (confirm(`¿Eliminar permanentemente todo el horario de ${currentCourseId}?`)) {
+                delete allSchedules[currentCourseId];
+                currentCourseId = Object.keys(allSchedules)[0];
+                localStorage.setItem('currentCourseId', currentCourseId);
+                schedule = allSchedules[currentCourseId];
+                saveAllData();
+                updateCourseSelector();
+                courseNameInput.innerText = currentCourseId;
+                renderTable();
+            }
+        }
+
+        // --- Conflict Detection Logic ---
+
+        function getTeacherConflicts(teacherName, cellId) {
+            if (!teacherName || teacherName.trim() === "") return [];
+
+            const conflicts = [];
+            const searchName = teacherName.trim().toLowerCase(); // Point 2: Case Insensitive
+
+            Object.keys(allSchedules).forEach(courseId => {
+                if (courseId === currentCourseId) return;
+
+                const otherSchedule = allSchedules[courseId];
+                if (otherSchedule[cellId] && otherSchedule[cellId].teacher) {
+                    if (otherSchedule[cellId].teacher.trim().toLowerCase() === searchName) {
+                        conflicts.push(courseId);
+                    }
+                }
+            });
+            return conflicts;
+        }
+
+        function checkGlobalConflicts() {
+            if (viewMode === 'teacher') {
+                conflictAlert.style.display = 'none'; // Conflicts not relevant in teacher view
+                return;
+            }
+
+            let hasConflicts = false;
+            Object.keys(schedule).forEach(cellId => {
+                const sub = schedule[cellId];
+                if (sub && sub.teacher) {
+                    const conflicts = getTeacherConflicts(sub.teacher, cellId);
+                    if (conflicts.length > 0) hasConflicts = true;
+                }
+            });
+            conflictAlert.style.display = hasConflicts ? 'block' : 'none';
+        }
+
+        // --- UI Rendering ---
+
+        function renderColorPicker() {
+            colorPicker.innerHTML = '';
+            PRESET_COLORS.forEach(color => {
+                const div = document.createElement('div');
+                div.className = `color-option ${color === selectedColor ? 'selected' : ''}`;
+                div.style.backgroundColor = color;
+                div.onclick = () => {
+                    selectedColor = color;
+                    renderColorPicker();
+                };
+                colorPicker.appendChild(div);
+            });
+        }
+
+        function renderSubjects() {
+            subjectsList.innerHTML = ''; // Keep this sync just in case
+            const paletteItems = document.getElementById('paletteItems');
+            paletteItems.innerHTML = '';
+
+            subjects.forEach(subject => {
+                const isBreak = subject.name.toUpperCase() === "RECREO" || subject.name.toUpperCase() === "ALMUERZO";
+
+                // Create Pill for Palette
+                const pill = document.createElement('div');
+                pill.className = 'palette-item';
+                pill.draggable = true;
+                pill.innerHTML = `
+                    <div class="color-dot" style="background-color: ${subject.color};"></div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="line-height: 1;">${subject.name}</span>
+                        ${!isBreak && subject.teacher ? `<span style="font-size: 0.55rem; color: #64748b; font-weight: normal;">${subject.teacher}</span>` : ''}
+                    </div>
+                `;
+
+                // Add delete button ONLY if not a break
+                if (!isBreak) {
+                    const delBtn = document.createElement('span');
+                    delBtn.innerHTML = "&times;";
+                    delBtn.style.cssText = "margin-left: 10px; cursor: pointer; color: #ef4444; font-size: 1.2rem; line-height: 0.5;";
+                    delBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        deleteSubject(subject.id);
+                    };
+                    pill.appendChild(delBtn);
+                }
+
+                pill.ondragstart = (e) => {
+                    if (viewMode === 'teacher') {
+                        e.preventDefault();
+                        return;
+                    }
+                    draggingSubject = subject;
+                    if (isBreak) draggingSubject.teacher = "";
+                    draggingFromCell = null;
+                    e.dataTransfer.setData('text/plain', subject.id);
+                    trashZone.classList.add('visible');
+                    pill.style.opacity = '0.5';
+                };
+
+                pill.ondragend = () => {
+                    trashZone.classList.remove('visible');
+                    pill.style.opacity = '1';
+                };
+
+                paletteItems.appendChild(pill);
+            });
+            localStorage.setItem('subjects', JSON.stringify(subjects));
+        }
+
+        function updateSubjectName(id, newName) {
+            const sub = subjects.find(s => s.id === id);
+            if (sub && newName) {
+                sub.name = newName.trim();
+                localStorage.setItem('subjects', JSON.stringify(subjects));
+                renderTable();
+            }
+        }
+
+        function updateSubjectTeacher(id, newTeacher) {
+            const sub = subjects.find(s => s.id === id);
+            if (sub) {
+                sub.teacher = newTeacher.trim();
+                localStorage.setItem('subjects', JSON.stringify(subjects));
+                renderTable();
+            }
+        }
+
+        function deleteSubject(id) {
+            const sub = subjects.find(s => s.id === id);
+            if (!sub) return;
+            const isBreak = sub.name.toUpperCase() === "RECREO" || sub.name.toUpperCase() === "ALMUERZO";
+            if (isBreak) return; // Protected!
+
+            if (confirm(`¿Eliminar "${sub.name}" de la lista?`)) {
+                subjects = subjects.filter(s => s.id !== id);
+                renderSubjects();
+            }
+        }
+
+        function fillRow(hourIndex, subjectToFill) {
+            DAYS.forEach((_, dayIndex) => {
+                schedule[`${hourIndex}-${dayIndex}`] = { ...subjectToFill };
+            });
+            saveAllData();
+            renderTable();
+        }
+
+        function renderTable() {
+            scheduleBody.innerHTML = '';
+            hours.forEach((time, hourIndex) => {
+                const tr = document.createElement('tr');
+
+                // Hour column
+                const tdTime = document.createElement('td');
+                tdTime.className = 'time-col';
+                tdTime.innerText = time;
+                tdTime.contentEditable = (viewMode === 'course'); // Disable editing in teacher mode
+                tdTime.onblur = () => {
+                    hours[hourIndex] = tdTime.innerText;
+                    localStorage.setItem('hours', JSON.stringify(hours));
+                    saveAllData();
+                };
+
+                // Special dragover for row-fill (only in course mode)
+                if (viewMode === 'course') {
+                    tdTime.classList.add('drop-zone-row'); // Add class for styling
+                    tdTime.dataset.hourIndex = hourIndex; // For consistency, though not strictly needed with fillRow
+                    tdTime.ondragover = (e) => {
+                        e.preventDefault();
+                        tdTime.classList.add('drag-over-row');
+                    };
+                    tdTime.ondragleave = () => {
+                        tdTime.classList.remove('drag-over-row');
+                    };
+                    tdTime.ondrop = (e) => {
+                        e.preventDefault();
+                        tdTime.classList.remove('drag-over-row');
+                        if (draggingSubject) {
+                            const isSpecial = draggingSubject.name.toUpperCase().includes("RECREO") || draggingSubject.name.toUpperCase().includes("ALMUERZO");
+                            if (isSpecial || confirm(`¿Llenar toda la fila con ${draggingSubject.name}?`)) {
+                                fillRow(hourIndex, draggingSubject);
+                            }
+                        }
+                    };
+                }
+
+                tr.appendChild(tdTime);
+
+                // Day columns
+                DAYS.forEach((day, dayIndex) => {
+                    const td = document.createElement('td');
+                    const cellId = `${hourIndex}-${dayIndex}`;
+
+                    let sub = null;
+                    let displayCourse = "";
+
+                    if (viewMode === 'course') {
+                        sub = schedule[cellId];
+                    } else {
+                        // Teacher Mode: Search for this teacher in ALL courses at this slot
+                        const searchName = currentTeacher.toLowerCase().trim();
+                        Object.keys(allSchedules).forEach(cId => {
+                            const entry = allSchedules[cId][cellId];
+                            if (entry && entry.teacher && entry.teacher.toLowerCase().trim() === searchName) {
+                                sub = entry;
+                                displayCourse = cId;
+                            }
+                        });
+
+                        // Handle Recreo/Almuerzo: Show them anyway in teacher view if they are global?
+                        // Actually, better to only show where the teacher is actively assigned.
+                        // But if we want to show breaks, we can:
+                        if (!sub) {
+                            // Check any course for common break
+                            const anyCourse = Object.keys(allSchedules)[0];
+                            if (anyCourse) { // Ensure there's at least one course
+                                const entry = allSchedules[anyCourse][cellId];
+                                if (entry && (entry.name.toUpperCase() === "RECREO" || entry.name.toUpperCase() === "ALMUERZO")) {
+                                    sub = entry;
+                                }
+                            }
+                        }
+                    }
+
+                    if (sub) {
+                        const isSpecial = sub.name.toUpperCase() === "RECREO" || sub.name.toUpperCase() === "ALMUERZO";
+                        const classDiv = document.createElement('div');
+                        classDiv.className = 'scheduled-class';
+                        classDiv.style.backgroundColor = sub.color;
+                        classDiv.draggable = (viewMode === 'course');
+
+                        if (isSpecial) {
+                            classDiv.innerHTML = `<span class="subject-name">${sub.name}</span>`;
+                        } else {
+                            if (viewMode === 'course') {
+                                const conflicts = getTeacherConflicts(sub.teacher, cellId);
+                                const hasConflict = conflicts.length > 0;
+                                if (hasConflict) {
+                                    classDiv.classList.add('conflict');
+                                    classDiv.style.border = "3px solid #ef4444";
+                                    classDiv.title = `¡CONFILCTO! Profesor ocupado en: ${conflicts.join(', ')}`;
+                                }
+                                classDiv.innerHTML = `
+                                    <span class="subject-name">${sub.name}</span>
+                                    <span class="teacher-name">${sub.teacher || ''}</span>
+                                    ${hasConflict ? '<span style="color:red; font-size:10px; font-weight:bold;">⚠️ CHOQUE</span>' : ''}
+                                `;
+                            } else {
+                                // Teacher mode: Show subject and WHICH COURSE it belongs to
+                                classDiv.innerHTML = `
+                                    <span class="subject-name">${sub.name}</span>
+                                    <span class="teacher-name" style="color: var(--primary-hover); font-weight: 800;">EN: ${displayCourse}</span>
+                                `;
+                            }
+                        }
+
+                        if (viewMode === 'course') {
+                            classDiv.ondragstart = (e) => {
+                                draggingSubject = sub;
+                                draggingFromCell = cellId;
+                                trashZone.classList.add('visible');
+                                setTimeout(() => { classDiv.style.opacity = '0'; }, 0);
+                            };
+                            classDiv.ondragend = () => {
+                                trashZone.classList.remove('visible');
+                                classDiv.style.opacity = '1';
+                            };
+                            classDiv.oncontextmenu = (e) => {
+                                e.preventDefault();
+                                delete schedule[cellId];
+                                saveAllData();
+                                renderTable();
+                            };
+                        }
+
+                        td.appendChild(classDiv);
+                    }
+
+                    if (viewMode === 'course') {
+                        const dropZone = document.createElement('div');
+                        dropZone.className = 'drop-zone';
+                        dropZone.dataset.cellId = cellId;
+
+                        if (!sub) { // If no subject, append the drop zone directly
+                            td.appendChild(dropZone);
+                        } else { // If there's a subject, wrap it in the drop zone
+                            const existingClassDiv = td.querySelector('.scheduled-class');
+                            if (existingClassDiv) {
+                                dropZone.appendChild(existingClassDiv);
+                            }
+                            td.appendChild(dropZone);
+                        }
+
+                        dropZone.ondragover = (e) => {
+                            e.preventDefault();
+                            dropZone.classList.add('drag-over');
+                        };
+
+                        dropZone.ondragleave = () => {
+                            dropZone.classList.remove('drag-over');
+                        };
+
+                        dropZone.ondrop = (e) => {
+                            e.preventDefault();
+                            dropZone.classList.remove('drag-over');
+
+                            if (draggingSubject) {
+                                if (draggingFromCell) {
+                                    delete schedule[draggingFromCell];
+                                }
+                                schedule[cellId] = { ...draggingSubject };
+                                saveAllData();
+                                renderTable();
+                            }
+                        };
+                    }
+
+                    tr.appendChild(td);
+                });
+
+                scheduleBody.appendChild(tr);
+            });
+            checkGlobalConflicts();
+        }
+
+        // --- Actions ---
+
+        function addSubject() {
+            const name = document.getElementById('newSubjectName').value.trim();
+            const teacher = document.getElementById('newTeacherName').value.trim();
+            if (!name) return;
+
+            const newSub = {
+                id: Date.now(),
+                name: name.toUpperCase(),
+                teacher: teacher,
+                color: selectedColor
+            };
+
+            subjects.push(newSub);
+            renderSubjects();
+            document.getElementById('newSubjectName').value = '';
+            document.getElementById('newTeacherName').value = '';
+        }
+
+        function updateHour(index, newTime) {
+            hours[index] = newTime.trim();
+            localStorage.setItem('hours', JSON.stringify(hours));
+        }
+
+        function addHourSlot() {
+            const lastHour = hours[hours.length - 1];
+            let nextHour = "00:00";
+            if (lastHour && lastHour.includes(':')) {
+                const parts = lastHour.split(':');
+                const lastH = parts[0].split('-').pop(); // get end of range if any
+                const hNum = parseInt(lastH);
+                nextHour = (hNum + 1).toString().padStart(2, '0') + ':00';
+            }
+            hours.push(nextHour);
+            localStorage.setItem('hours', JSON.stringify(hours));
+            renderTable();
+        }
+
+        function removeHourSlot() {
+            if (hours.length > 1) {
+                const hourIndexToRemove = hours.length - 1;
+                // Point 3: Global Cleanup
+                Object.keys(allSchedules).forEach(courseId => {
+                    DAYS.forEach((_, dayIndex) => {
+                        delete allSchedules[courseId][`${hourIndexToRemove}-${dayIndex}`];
+                    });
+                });
+
+                hours.pop();
+                localStorage.setItem('hours', JSON.stringify(hours));
+                saveAllData();
+                renderTable();
+            }
+        }
+
+        function saveAllData() {
+            allSchedules[currentCourseId] = schedule;
+            localStorage.setItem('allSchedules', JSON.stringify(allSchedules));
+        }
+
+        function resetAll() {
+            if (confirm(`¿Borrar todo el horario de ${currentCourseId}?`)) {
+                allSchedules[currentCourseId] = {};
+                schedule = {};
+                saveAllData();
+                renderTable();
+            }
+        }
+
+        trashZone.ondragover = (e) => {
+            e.preventDefault();
+            trashZone.classList.add('drag-over');
+        };
+
+        trashZone.ondragleave = () => {
+            trashZone.classList.remove('drag-over');
+        };
+
+        trashZone.ondrop = (e) => {
+            e.preventDefault();
+            trashZone.classList.remove('drag-over');
+            if (draggingFromCell) {
+                delete schedule[draggingFromCell];
+                saveAllData();
+                renderTable();
+            }
+        };
+
+        window.onbeforeprint = () => {
+            document.getElementById('printSubtitle').innerText = currentCourseId;
+            document.getElementById('printTitle').innerText = "Horario de Clases";
+        };
+
+        init();
+    </script>
+</body>
+
+</html>

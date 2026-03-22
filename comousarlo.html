@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Uso - Generador de Horarios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0369a1;
+            --accent-color: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .guide-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border-left: 6px solid var(--primary-color);
+        }
+
+        .guide-section h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-section h2 .step-num {
+            background: var(--primary-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1rem;
+        }
+
+        .guide-section p {
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .tip-box {
+            background: #f0f9ff;
+            border: 1px dashed var(--primary-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .conflict-box {
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-home:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .feature-badge {
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        /* Animations */
+        .guide-section {
+            animation: slideUp 0.5s ease backwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .st-1 { animation-delay: 0.1s; }
+        .st-2 { animation-delay: 0.2s; }
+        .st-3 { animation-delay: 0.3s; }
+        .st-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Guía de Usuario</h1>
+            <p>Aprende a usar el Generador de Horarios Profesional</p>
+        </header>
+
+        <section class="guide-section st-1">
+            <h2><span class="step-num">1</span> Gestión de Cursos</h2>
+            <p>El sistema permite gestionar múltiples cursos en un solo lugar.</p>
+            <ul>
+                <li>Usa el botón <b>+ Nuevo Curso</b> en la parte superior para añadir grados (ej: 1° Básico A, 2° Básico B).</li>
+                <li>Cambia entre cursos usando el menú desplegable (Selector).</li>
+                <li>Haz clic en el título central para cambiar el nombre del curso actual en cualquier momento.</li>
+            </ul>
+        </section>
+
+        <section class="guide-section st-2">
+            <h2><span class="step-num">2</span> Crear Asignaturas y Profesores</h2>
+            <p>Configura las materias que el profesor imparte en los distintos cursos.</p>
+            <ul>
+                <li>Ingresa el <b>Nombre de la Asignatura</b> (ej: Matemáticas).</li>
+                <li>Ingresa el <b>Nombre del Profesor</b> (ej: Juan P.). <span class="feature-badge">Importante</span></li>
+                <li>El nombre del profesor es la clave para que el sistema detecte "choques" entre distintos cursos.</li>
+                <li>Elige un color para identificarla visualmente en el horario.</li>
+            </ul>
+        </section>
+
+        <section class="guide-section st-3">
+            <h2><span class="step-num">3</span> Armado del Horario (Drag & Drop)</h2>
+            <p>Ubica las asignaturas simplemente arrastrándolas desde el panel lateral hacia las celdas de la tabla.</p>
+            <ul>
+                <li><b>Truco de Fila Completa:</b> Si arrastras una asignatura (como "Recreo" o "Almuerzo") a la columna blanca de <b>HORAS</b>, se llenará toda la fila automáticamente.</li>
+                <li><b>Editar Horas:</b> Haz clic en cualquier hora de la columna izquierda para cambiarla. Esto se actualizará en todos tus cursos para mantener la consistencia.</li>
+                <li><b>Borrar:</b> Arrastra una clase de vuelta a la papelera (icono rojo abajo a la derecha) o haz clic derecho sobre la celda.</li>
+            </ul>
+        </section>
+
+        <section class="guide-section st-4">
+            <h2><span class="step-num">4</span> Detección de Conflictos (Choques)</h2>
+            <p>Esta es la función estrella para evitar errores de programación.</p>
+            <div class="conflict-box">
+                <b>¿Cómo funciona?</b> El sistema revisa en tiempo real si el profesor que estás asignando ya tiene clase en OTRO curso a esa misma hora.
+            </div>
+            <ul>
+                <li>Si hay un choque, la celda se pondrá en <b>Rojo Intenso</b> con el aviso <b>⚠️ CHOQUE</b>.</li>
+                <li>Pasa el mouse sobre el aviso para ver en qué curso está ocupado el profesor.</li>
+                <li>Aparecerá una alerta general en el panel lateral avisándote que hay errores que corregir.</li>
+            </ul>
+        </section>
+
+        <section class="guide-section st-5">
+            <h2><span class="step-num">5</span> Guardado e Impresión</h2>
+            <ul>
+                <li><b>Auto-guardado:</b> Todo se guarda automáticamente en tu navegador. Puedes cerrar la pestaña y volver mañana sin perder nada.</li>
+                <li><b>Imprimir PDF:</b> Usa el botón "Imprimir PDF". El sistema limpiará la pantalla para generar una versión lista para imprimir a color en tamaño carta/oficio.</li>
+            </ul>
+            <div class="tip-box">
+                💡 <b>Tip de Oro:</b> Elige colores pasteles claros para las celdas; se ven mucho mejor al imprimir y permiten leer los nombres de los profesores fácilmente.
+            </div>
+        </section>
+
+        <div style="text-align: center;">
+            <a href="index.html" class="btn-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Volver al Generador
+            </a>
+        </div>
+    </div>
+
+</body>
+
+</html>
